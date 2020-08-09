@@ -11,18 +11,23 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import com.allenliu.versionchecklib.v2.AllenVersionChecker;
+import com.allenliu.versionchecklib.v2.builder.DownloadBuilder;
 import com.allenliu.versionchecklib.v2.builder.UIData;
 import com.allenliu.versionchecklib.v2.callback.RequestVersionListener;
 import com.google.gson.Gson;
+import com.qsboy.antirecall.bean.UpdateInfo;
 
 import java.io.File;
 
 public class UpdateHelper {
 
-    private final String REQUEST_URL = "http://anti-recall.qsboy.com/version.json";
+    private static final String REQUEST_URL = "http://anti-recall.qsboy.com/version.json";
     private String TAG = "Check Update";
     private Entry entry = new Entry();
+    private UpdateInfo updateInfo;
     private Activity activity;
     private CheckUpdateListener checkUpdateListener;
 
@@ -38,9 +43,12 @@ public class UpdateHelper {
                 .requestVersion()
                 .setRequestUrl(REQUEST_URL)
                 .request(new RequestVersionListener() {
+
+                    @Nullable
                     @Override
-                    public UIData onRequestVersionSuccess(String result) {
-                        entry = new Gson().fromJson(result, Entry.class);
+                    public UIData onRequestVersionSuccess(DownloadBuilder downloadBuilder, String result) {
+//                        entry = new Gson().fromJson(result, Entry.class);
+                        updateInfo = new Gson().fromJson(result, UpdateInfo.class);
                         Log.d(TAG, "onRequestVersionSuccess: " + entry);
 
                         boolean needUpdate = needUpdate(entry.versionCode);
@@ -49,8 +57,8 @@ public class UpdateHelper {
                         if (needUpdate)
                             return UIData
                                     .create()
-                                    .setTitle(entry.title)
-                                    .setContent(entry.desc)
+                                    .setTitle(updateInfo.getUpdateDate())
+                                    .setContent(updateInfo.getUpdateContent())
                                     .setDownloadUrl(entry.path);
                         else return null;
                     }
@@ -63,8 +71,7 @@ public class UpdateHelper {
                     }
                 })
                 .setForceUpdateListener(() -> activity.finish())
-                .setDownloadAPKPath(apkPath)
-                .excuteMission(activity);
+                .setDownloadAPKPath(apkPath).executeMission(activity);
 
     }
 
@@ -93,6 +100,7 @@ public class UpdateHelper {
 
         void error();
     }
+
 
     private class Entry {
 

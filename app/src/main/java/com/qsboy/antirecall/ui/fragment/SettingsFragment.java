@@ -24,15 +24,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -57,6 +57,7 @@ import com.qsboy.antirecall.utils.UpdateHelper;
 
 import java.io.File;
 import java.util.Date;
+import java.util.Objects;
 
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import devlight.io.library.ntb.NavigationTabBar;
@@ -349,7 +350,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
 
         // 当前版本号
         try {
-            tvLocalVersion.setText(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
+            tvLocalVersion.setText(Objects.requireNonNull(getActivity()).getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -368,7 +369,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
                 clicks++;
             this.clickTime = clickTime;
             if (clicks == 5) {
-                File file = new File(getActivity().getExternalFilesDir("logs"), "Anti-recall-06-14.log");
+                File file = new File(Objects.requireNonNull(getActivity()).getExternalFilesDir("logs"), "Anti-recall-06-14.log");
                 Log.i(TAG, "onCreateView: file: " + file);
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -451,6 +452,7 @@ public class SettingsFragment extends Fragment implements ActivityCompat.OnReque
     private Bitmap getBitmap(int drawableRes) {
         Drawable drawable = VectorDrawableCompat.create(getResources(), drawableRes, null);
         Canvas canvas = new Canvas();
+        assert drawable != null;
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         canvas.setBitmap(bitmap);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());

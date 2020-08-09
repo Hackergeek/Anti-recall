@@ -8,6 +8,7 @@ package com.qsboy.antirecall.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -52,9 +53,12 @@ public class LogcatHelper {
         if (!file.exists()) {
             System.out.println("logcat: make dir: " + file.mkdirs());
         }
+        Log.d(TAG, "init: " + PATH_LOGCAT);
 
 
     }
+
+    private static final String TAG = "LogcatHelper";
 
     public void start() {
         if (logDumper == null) {
